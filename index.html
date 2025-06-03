@@ -1,143 +1,109 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>KIPS|黑潮智能预报系统—Kuroshio Intelligent Prediction System </title>
     <meta charset="UTF-8">
-    <meta name="keywords" content="黑潮预报、黑潮可预报性、海洋智能预报、海洋可预报性、黑潮入侵南海、黑潮大弯曲">
-    <meta name="description" content="黑潮智能预报系统（KIPS），是河海大学海洋学院王强教授团队研发的黑潮短期预报系统，具备高效、便捷的特性，能在2秒内完成对未来10天的海洋三维温、盐、流以及海面高度预报。">
-    <link rel='stylesheet' href='./styles/style.css'/>
-    <script type="text/javascript">
-        (function () {
-            var updateBaseFontSize = function () {
-                var dWidth = document.documentElement.clientWidth;
-                var baseFontSize = dWidth * 100 / 1880;
-                document.querySelector('html').style.fontSize = baseFontSize + 'px';
-            };
-            window.addEventListener('resize', updateBaseFontSize);
-            updateBaseFontSize();
-        })();
-    </script>
-    <script type="text/javascript" src="./javascripts/vue.min.js"></script>
-    <script type="text/javascript" src="./javascripts/axios.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海洋预报可视化</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            display: flex;
+            width: 80%;
+            height: 80%;
+        }
+
+        /* 左侧选项框样式 */
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 2px solid #ddd;
+            padding: 10px;
+        }
+
+        .sidebar select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover {
+            background-color: #45a049;
+        }
+
+        /* 右侧图片显示窗口 */
+        .image-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            border: 2px solid #ddd;
+            padding: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
 </head>
 <body>
-<div id="app" v-cloak>
-    <div class="nav">
-        <div :class="[
-        wFlags<=.53 &&'nav-box_w51',
-        wFlags>.53 && wFlags<=.56   && 'nav-box',
-        wFlags>.56 && wFlags<=.58  && 'nav-box_w56',
-        wFlags>.58  && 'nav-box_w63'
-        ]">
-            <img class="logo" src="./images/logo.png" alt="">
-            <div class="lan">
-                <i></i><span class="cn" @click="languageFun('zh-cn')">中文</span> | <span class="us" @click="languageFun('en-us')">English</span>
-            </div>
-        </div>
+
+<div class="container">
+    <!-- 左侧选项框 -->
+    <div class="sidebar">
+        <h3>选择海洋预报类型</h3>
+        <select id="forecastSelect">
+            <option value="forecast1">预报类型 1</option>
+            <option value="forecast2">预报类型 2</option>
+            <option value="forecast3">预报类型 3</option>
+        </select>
+        <button id="loadImageButton">加载图像</button>
     </div>
 
-    <div :class="[
-    wFlags<=.53 && 'content-w51',
-    wFlags>.53 && wFlags<=.56  && 'content-w',
-    wFlags>.56 && wFlags<=.58  && 'content-w56',
-    wFlags>.58 && 'content-w63'
-    ]">
-        <div class="content">
-            <div class="left-content">
-                <div class="date-box">
-                    <span>{{formatDate(dateVal)}}</span>
-                </div>
-                <div class="variable">
-                    <div class="title">
-                        <i></i><span>{{constant.bl}}</span>
-                    </div>
-                    <ul class="options">
-                        <li v-for="(item, key) in variable" :key="key" :class="[{'select': key==variableKey}]" @click="variableClick(item,key)">
-                            {{formatContent(item.content)}}
-                        </li>
-                    </ul>
-                </div>
-                <div class="profundity">
-                    <div class="title">
-                        <i></i><span>{{constant.sd}}</span>
-                    </div>
-                    <ul class="options">
-                        <template v-if="this.ishmgd">
-                            <li v-for="(item, key) in profundity" :key="key" class="not-hover">
-                                {{item.title}}
-                            </li>
-                        </template>
-                        <template v-else>
-                            <li v-for="(item, key) in profundity" :key="key" :class="[{'select': key==profundityKey}]" @click="profundityClick(item,key)">
-                                {{item.title}}
-                            </li>
-                        </template>
-
-                    </ul>
-                </div>
-                <div class="forecast-duration">
-                    <div class="title">
-                        <i></i><span>{{constant.ybsc}}</span>
-                    </div>
-                    <ul class="options">
-                        <li v-for="(item, key) in forecastDuration" :key="key"
-                            :class="[{'select': key==forecastDurationKey}]" @click="forecastDurationClick(item,key)">
-                            {{item.title}}
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="middle-content">
-                <img :src="imgUrl" alt="" v-if="imgUrl">
-                <div v-else  alt=""  style="
-                background: rgb(226 226 226);
-                width: 8.25rem;
-                height: 8.25rem;
-                z-index: 0;
-                position: absolute;
-                top: .52rem;
-                left: .68rem;"></div>
-
-            </div>
-            <div class="right-content">
-                <div :class="['top-box',language=='en-us'&&'en-us']">
-                    <template v-if="rightBtn.length>0">
-                        <div class="item i-a" @click="getArticle(item.id)" v-for="(item,key) in rightBtn" key>
-                            <i></i> <span>{{language=='zh-cn'? item.name : item.nickname}}</span>
-                        </div>
-                        <div class="item i-d">
-                            <i></i> <span>{{constant.qt}}</span>
-                        </div>
-                    </template>
-                </div>
-                <div class="page-view">
-                    <span>{{language === 'en-us' ? 'Page views' : '浏览量'}}<b>{{count}}</b></span>
-                </div>
-                <div class="news">
-                    <div class="title">
-                        {{constant.kydt}} <span>NEW</span>
-                    </div>
-                    <img src="./images/line.png" alt="">
-                    <ul>
-                        <li v-for="(item, key) in researchTrends" @click="openArticle(item.id)" :key="key">
-                            <h5>{{item.title}}</h5>
-                            <p>{{item.description}}</p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="rule">
-                    <h5>{{constant.mzsm}}</h5>
-                    <p :style="{lineHeight: language === 'en-us' ? '.22rem' : '.3rem'}">
-                        {{ language=='zh-cn'? disclaimer.title : disclaimer.content }}
-                    </p>
-                </div>
-            </div>
-        </div>
+    <!-- 右侧图片显示窗口 -->
+    <div class="image-container">
+        <img id="forecastImage" src="" alt="海洋预报图像" />
     </div>
-
-    <p class="foot">Copyright ©2025 黑潮智能预报系统 鲁ICP备2025147266号</p>
 </div>
+
+<script>
+    document.getElementById('loadImageButton').addEventListener('click', function() {
+        // 根据选项框的选择加载不同的图片
+        const forecastType = document.getElementById('forecastSelect').value;
+        let imageUrl = '';
+
+        if (forecastType === 'forecast1') {
+            imageUrl = 'https://example.com/forecast1.jpg'; // 替换为你的图片URL
+        } else if (forecastType === 'forecast2') {
+            imageUrl = 'https://example.com/forecast2.jpg'; // 替换为你的图片URL
+        } else if (forecastType === 'forecast3') {
+            imageUrl = 'https://example.com/forecast3.jpg'; // 替换为你的图片URL
+        }
+
+        // 设置图片的 URL
+        document.getElementById('forecastImage').src = imageUrl;
+    });
+</script>
+
 </body>
-<script type="text/javascript" src="./javascripts/index.js"></script>
 </html>
