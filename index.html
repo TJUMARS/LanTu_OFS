@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>海洋预报可视化</title>
+    <title> Welcome to LanTu Ocean Forecasting System </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,22 +22,33 @@
             height: 80%;
         }
 
-        /* 左侧选项框样式 */
+        /* 右侧选项框样式 */
         .sidebar {
-            width: 250px;
+            width: 300px;
             background-color: #ffffff;
-            border-right: 2px solid #ddd;
-            padding: 10px;
+            border-left: 2px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
         }
 
-        .sidebar select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
+        .sidebar h3 {
+            margin-top: 0;
         }
 
-        .sidebar button {
-            width: 100%;
+        /* 时间显示 */
+        .time-display {
+            margin-bottom: 20px;
+        }
+
+        /* 预报时长按钮 */
+        .duration-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .duration-buttons button {
             padding: 8px;
             background-color: #4CAF50;
             color: white;
@@ -45,11 +56,45 @@
             cursor: pointer;
         }
 
-        .sidebar button:hover {
+        .duration-buttons button:hover {
             background-color: #45a049;
         }
 
-        /* 右侧图片显示窗口 */
+        /* 变量选择按钮 */
+        .variable-buttons {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .variable-buttons label {
+            margin-bottom: 10px;
+        }
+
+        .variable-buttons input {
+            margin-right: 5px;
+        }
+
+        /* 深度选择按钮 */
+        .depth-buttons {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .depth-buttons button {
+            padding: 8px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .depth-buttons button:hover {
+            background-color: #1976D2;
+        }
+
+        /* 中间图片显示区域 */
         .image-container {
             flex-grow: 1;
             display: flex;
@@ -69,40 +114,98 @@
 <body>
 
 <div class="container">
-    <!-- 左侧选项框 -->
+    <!-- 右侧选项框 -->
     <div class="sidebar">
-        <h3>选择海洋预报类型</h3>
-        <select id="forecastSelect">
-            <option value="forecast1">预报类型 1</option>
-            <option value="forecast2">预报类型 2</option>
-            <option value="forecast3">预报类型 3</option>
-        </select>
-        <button id="loadImageButton">加载图像</button>
+        <!-- 当前时间显示 -->
+        <div class="time-display">
+            <h3>当前时间</h3>
+            <p id="currentTime"></p>
+        </div>
+
+        <!-- 预报时长 -->
+        <div>
+            <h3>预报时长</h3>
+            <div class="duration-buttons">
+                <!-- 生成按钮01D到30D -->
+                <button data-duration="01D">01D</button>
+                <button data-duration="02D">02D</button>
+                <button data-duration="03D">03D</button>
+                <!-- ... 总共30个按钮 -->
+                <button data-duration="30D">30D</button>
+            </div>
+        </div>
+
+        <!-- 变量选择 -->
+        <div class="variable-buttons">
+            <h3>变量选择</h3>
+            <label><input type="radio" name="variable" value="海流"> 海流</label>
+            <label><input type="radio" name="variable" value="海洋温度"> 海洋温度</label>
+            <label><input type="radio" name="variable" value="海洋盐度"> 海洋盐度</label>
+            <label><input type="radio" name="variable" value="海表面高度"> 海表面高度</label>
+        </div>
+
+        <!-- 深度选择 -->
+        <div class="depth-buttons">
+            <h3>深度选择</h3>
+            <button data-depth="0m">0m</button>
+            <button data-depth="10m">10m</button>
+            <button data-depth="150m">150m</button>
+            <button data-depth="300m">300m</button>
+        </div>
     </div>
 
-    <!-- 右侧图片显示窗口 -->
+    <!-- 中间图片显示区域 -->
     <div class="image-container">
         <img id="forecastImage" src="" alt="海洋预报图像" />
     </div>
 </div>
 
 <script>
-    document.getElementById('loadImageButton').addEventListener('click', function() {
-        // 根据选项框的选择加载不同的图片
-        const forecastType = document.getElementById('forecastSelect').value;
-        let imageUrl = '';
+    // 显示当前时间
+    document.getElementById('currentTime').textContent = new Date().toLocaleString();
 
-        if (forecastType === 'forecast1') {
-            imageUrl = 'https://example.com/forecast1.jpg'; // 替换为你的图片URL
-        } else if (forecastType === 'forecast2') {
-            imageUrl = 'https://example.com/forecast2.jpg'; // 替换为你的图片URL
-        } else if (forecastType === 'forecast3') {
-            imageUrl = 'https://example.com/forecast3.jpg'; // 替换为你的图片URL
-        }
+    // 设置按钮点击事件
+    const forecastImage = document.getElementById('forecastImage');
 
-        // 设置图片的 URL
-        document.getElementById('forecastImage').src = imageUrl;
+    // 预报时长按钮点击事件
+    document.querySelectorAll('.duration-buttons button').forEach(button => {
+        button.addEventListener('click', function() {
+            const duration = this.getAttribute('data-duration');
+            console.log('选择的预报时长:', duration);
+            loadImage();
+        });
     });
+
+    // 变量选择按钮点击事件
+    document.querySelectorAll('.variable-buttons input').forEach(input => {
+        input.addEventListener('change', function() {
+            const variable = this.value;
+            console.log('选择的变量:', variable);
+            loadImage();
+        });
+    });
+
+    // 深度按钮点击事件
+    document.querySelectorAll('.depth-buttons button').forEach(button => {
+        button.addEventListener('click', function() {
+            const depth = this.getAttribute('data-depth');
+            console.log('选择的深度:', depth);
+            loadImage();
+        });
+    });
+
+    // 根据选择加载图片
+    function loadImage() {
+        const duration = document.querySelector('.duration-buttons button:checked')?.getAttribute('data-duration') || '01D';
+        const variable = document.querySelector('.variable-buttons input:checked')?.value || '海流';
+        const depth = document.querySelector('.depth-buttons button:checked')?.getAttribute('data-depth') || '0m';
+
+        // 构建图片路径
+        const imageUrl = `./images/${variable}_${duration}_${depth}.png`; // 这里假设图片存放在 ./images/ 目录
+
+        // 更新图片
+        forecastImage.src = imageUrl;
+    }
 </script>
 
 </body>
