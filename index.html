@@ -189,7 +189,7 @@
         }
 
         .image-container {
-            background-color: #000000;
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -204,8 +204,9 @@
 
         .image-container img {
             max-height: 100%;
+            max-width: 100%; /* 确保图片不超出容器 */
             border-radius: var(--border-radius);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgb(255, 255, 255);
             transition: opacity 0.5s ease;
         }
 
@@ -254,29 +255,77 @@
             font-size: 12px;
         }
 
+        /* 修改媒体查询，保持三栏布局 */
+        @media (max-width: 1600px) {
+            .sidebar, .info-panel {
+                width: 25%;
+            }
+            .image-container {
+                width: 50%;
+            }
+        }
+
         @media (max-width: 1200px) {
-            .main-content {
-                flex-wrap: wrap;
+            .sidebar, .info-panel {
+                width: 30%;
             }
-
-            .sidebar, .image-container, .info-panel {
-                width: 100%;
-                margin: 0 0 20px 0;
-                height: auto;
+            .image-container {
+                width: 40%;
+                margin: 0 10px;
             }
+        }
 
-            .info-panel {
-                flex-direction: row;
+        @media (max-width: 992px) {
+            .sidebar, .info-panel {
+                width: 35%;
             }
-
-            .data-info, .contact-us {
-                min-height: 200px;
+            .image-container {
+                width: 30%;
+                margin: 0 5px;
             }
         }
 
         @media (max-width: 768px) {
-            .info-panel {
-                flex-direction: column;
+            .main-content {
+                margin: 10px;
+            }
+            
+            .sidebar, .info-panel {
+                width: 35%;
+                padding: 10px;
+            }
+            
+            .image-container {
+                width: 30%;
+                margin: 0 5px;
+                padding: 5px;
+            }
+            
+            .duration-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .depth-buttons .buttons-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-info, .contact-us {
+                padding: 10px;
+            }
+            
+            .play-controls {
+                padding: 5px;
+                gap: 5px;
+            }
+            
+            .play-button {
+                width: 25px;
+                height: 25px;
+            }
+            
+            .time-display-play {
+                font-size: 10px;
+                min-width: 45px;
             }
         }
     </style>
