@@ -1,223 +1,530 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Welcome to LanTu Ocean Forecasting System </title>
+    <title> Welcome to LanTu OFS </title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --primary-color: #002477;
+            --secondary-color: #3E92CC;
+            --accent-color: #D8315B;
+            --light-color: #F4F4F9;
+            --dark-color: #121212;
+            --neutral-color: #6B7280;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --button-active: #D8315B; /* 按钮激活状态颜色 */
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--light-color);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ffffff, #00026b);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            height: 100vh;
-            background-color: #f4f4f9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .container {
+        .header img {
+            height: 60px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .logo-container {
             display: flex;
-            width: 80%;
-            height: 80%;
+            gap: 15px;
         }
 
-        /* 右侧选项框样式 */
+        .logo-container img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            margin: 20px;
+        }
+
         .sidebar {
-            width: 300px;
-            background-color: #ffffff;
-            border-left: 2px solid #ddd;
-            padding: 20px;
+            width: 20%; /* 工具栏宽度为20% */
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 80vh; /* 工具栏高度为页面的80% */
             overflow-y: auto;
         }
 
-        .sidebar h3 {
-            margin-top: 0;
+        .title-box {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
         }
 
-        /* 时间显示 */
         .time-display {
-            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--dark-color);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
         }
 
-        /* 预报时长按钮 */
         .duration-buttons {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
 
         .duration-buttons button {
-            padding: 8px;
-            background-color: #4CAF50;
+            padding: 8px 4px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
+            border-radius: var(--border-radius);
             cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .duration-buttons button:hover {
-            background-color: #45a049;
+        .duration-buttons button.active {
+            background-color: var(--button-active);
         }
 
-        /* 变量选择按钮 */
         .variable-buttons {
             display: flex;
             flex-direction: column;
-            margin-bottom: 20px;
+            gap: 8px;
         }
 
-        .variable-buttons label {
-            margin-bottom: 10px;
+        .variable-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
         }
 
-        .variable-buttons input {
-            margin-right: 5px;
-        }
-
-        /* 深度选择按钮 */
-        .depth-buttons {
+        .variable-options label {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+        }
+
+        .depth-buttons .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
         }
 
         .depth-buttons button {
-            padding: 8px;
-            background-color: #2196F3;
+            padding: 8px 5px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            margin-bottom: 10px;
+            transition: var(--transition);
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .depth-buttons button:hover {
-            background-color: #1976D2;
+        .depth-buttons button.active {
+            background-color: var(--button-active);
         }
 
-        /* 中间图片显示区域 */
+        .depth-buttons button.disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         .image-container {
-            flex-grow: 1;
+            background-color: #000000;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #ffffff;
-            border: 2px solid #ddd;
-            padding: 20px;
+            padding: 15px;
+            position: relative;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            height: 80vh; /* 图片区域高度为页面的80% */
+            width: auto; /* 宽度根据图片自动调整 */
+            margin: 0 20px;
         }
 
         .image-container img {
-            max-width: 100%;
             max-height: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s ease;
+        }
+
+        .info-panel {
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 80vh;
+        }
+
+        .data-info, .contact-us {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .data-info h3, .contact-us h3 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        .data-info ul, .contact-us ul {
+            color:  rgb(37, 28, 28);
+            margin-bottom: 4px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgb(0, 0, 0);
+            font-size: 12px;
+        }
+        .data-info p, .contact-us p {
+            margin-bottom: 15px;
+            line-height: 1.2;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-wrap: wrap;
+            }
+
+            .sidebar, .image-container, .info-panel {
+                width: 100%;
+                margin: 0 0 20px 0;
+                height: auto;
+            }
+
+            .info-panel {
+                flex-direction: row;
+            }
+
+            .data-info, .contact-us {
+                min-height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .info-panel {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <!-- 右侧选项框 -->
-    <div class="sidebar">
-        <!-- 当前时间显示 -->
-        <div class="time-display">
-            <h3>当前时间</h3>
-            <p id="currentTime"></p>
+    <div class="header">
+        <img src="./src/img/logo.png" alt="" />
+        <div class="logo-container">
+            <a href="https://www.tju.edu.cn/" target="_blank">
+                <img src="./src/img/TJU.png" alt="天津大学标志" title="天津大学（TJU）">
+            </a>
+            <a href="https://marine.tju.edu.cn/" target="_blank">
+                <img src="./src/img/SMST.png" alt="海洋学院标志" title="海洋科学与技术学院（SMST）">
+            </a>
+            <a href="http://tjumars.com/" target="_blank">
+                <img src="./src/img/MARS.png" alt="MARS实验室标志" title="天津市海洋环境与安全保障重点实验室（MARS）">
+            </a>
+            <a href="http://tjumars.com/PicList.aspx?ClassID=38" target="_blank">
+                <img src="./src/img/ROOT.png" alt="ROOT团队标志" title="业务化海洋学研究团队（ROOT）">
+            </a>
         </div>
+    </div>
 
-        <!-- 预报时长 -->
-        <div>
-            <h3>预报时长</h3>
-            <div class="duration-buttons">
-                <!-- 生成按钮01D到30D -->
-                <button data-duration="01D">01D</button>
-                <button data-duration="02D">02D</button>
-                <button data-duration="03D">03D</button>
-                <button data-duration="04D">04D</button>
-                <button data-duration="05D">05D</button>
-                <button data-duration="06D">06D</button>
-                <button data-duration="07D">07D</button>
-                <button data-duration="08D">08D</button>
-                <button data-duration="09D">09D</button>
-                <button data-duration="10D">10D</button>
-                <button data-duration="11D">11D</button>
-                <button data-duration="12D">12D</button>
-                <button data-duration="13D">13D</button>
-                <button data-duration="14D">14D</button>
-                <button data-duration="15D">15D</button>
-                <button data-duration="30D">30D</button>
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="time-display">
+                <h3 class="title-box">当前时间</h3>
+                <p id="currentTime"></p>
+            </div>
+
+            <div class="duration">
+                <h3 class="title-box">预报时长</h3>
+                <div class="duration-buttons">
+                    <button data-duration="01D">01D</button>
+                    <button data-duration="02D">02D</button>
+                    <button data-duration="03D">03D</button>
+                    <button data-duration="04D">04D</button>
+                    <button data-duration="05D">05D</button>
+                    <button data-duration="06D">06D</button>
+                    <button data-duration="07D">07D</button>
+                    <button data-duration="08D">08D</button>
+                    <button data-duration="09D">09D</button>
+                    <button data-duration="10D">10D</button>
+                    <button data-duration="11D">11D</button>
+                    <button data-duration="12D">12D</button>
+                    <button data-duration="13D">13D</button>
+                    <button data-duration="14D">14D</button>
+                    <button data-duration="15D">15D</button>
+                </div>
+            </div>
+
+            <div class="variable-buttons">
+                <h3 class="title-box">变量</h3>
+                <div class="variable-options">
+                    <label><input type="radio" name="variable" value="OC" checked> 海流</label>
+                    <label><input type="radio" name="variable" value="TEMP"> 海洋温度</label>
+                    <label><input type="radio" name="variable" value="SALT"> 海洋盐度</label>
+                    <label><input type="radio" name="variable" value="SSH"> 海表面高度</label>
+                </div>
+            </div>
+
+            <div class="depth-buttons">
+                <h3 class="title-box">深度</h3>
+                <div class="buttons-container">
+                    <button data-depth="0m" class="active">0m</button>
+                    <button data-depth="155m">155m</button>
+                    <button data-depth="318m">318m</button>
+                    <button data-depth="643m">643m</button>
+                </div>
             </div>
         </div>
 
-        <!-- 变量选择 -->
-        <div class="variable-buttons">
-            <h3>变量选择</h3>
-            <label><input type="radio" name="variable" value="海流"> 海流</label>
-            <label><input type="radio" name="variable" value="海洋温度"> 海洋温度</label>
-            <label><input type="radio" name="variable" value="海洋盐度"> 海洋盐度</label>
-            <label><input type="radio" name="variable" value="海表面高度"> 海表面高度</label>
+        <div class="image-container">
+            <img id="forecastImage" src="" alt="海洋预报图像" />
         </div>
 
-        <!-- 深度选择 -->
-        <div class="depth-buttons">
-            <h3>深度选择</h3>
-            <button data-depth="0m">0m</button>
-            <button data-depth="10m">10m</button>
-            <button data-depth="150m">150m</button>
-            <button data-depth="300m">300m</button>
+        <div class="info-panel">
+            <div class="data-info">
+                <h3>数据信息</h3>
+                <p>产品更新：<ul>  预报数据每日更新一次。</ul></p>
+                <p>数据来源：
+                    <ul>  蓝图海洋预报系统-西北太平洋</ul>
+                    <ul>  LanTu: 人工智能预报大模型</ul>
+                </p>
+                <p>数据单位：
+                    <ul>海流: 米/秒（m/s）</ul>
+                    <ul>海洋温度: 摄氏度（℃）</ul>
+                    <ul>海洋盐度: PSU</ul>
+                    <ul>海表面高度：米（m）</ul>
+                    </ul>
+                </p>
+            </div>
+
+            <div class="contact-us">
+                <h3>联系我们</h3>
+                <p>如果您有非盈利活动或业务需求以及其他问题，请通过以下方式联系我们：</p>
+                <p>
+                    <ul>联系人：李威，liwei1978@tju.edu.cn</ul>
+                    <ul>联系人：郑清予，qy_zheng@tju.edu.cn</ul>
+                </p>
+                <ul>工作时间：周一至周五 9:00-18:00</ul>
+                <ul>地址：中国天津市南开区学府街卫津路92号</ul>
+                <p>我们的专家团队将为您提供支持。</p>
+            </div>
         </div>
     </div>
 
-    <!-- 中间图片显示区域 -->
-    <div class="image-container">
-        <img id="forecastImage" src="" alt="海洋预报图像" />
+    <div class="footer">
+        <p>© 2025 蓝图海洋预报系统. 保留所有权利.</p>
+        <p>免责声明: 本产品仅供用户参考使用，对于因使用该产品而引起的任何直接、间接、特殊、偶然或结果性损失，预报方均不承担责任。</p>
+        <p>版权声明：天津大学（TJU）海洋科学与技术学院（SMST）天津市海洋环境与安全保障重点实验室（MARS）业务化海洋学研究团队（ROOT）拥有对上述图表信息的著作权及相关权力，任何人、机构不得擅自使用。</p>
     </div>
-</div>
 
-<script>
-    // 显示当前时间
-    document.getElementById('currentTime').textContent = new Date().toLocaleString();
+    <script>
+        // 显示当前时间
+        function updateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                weekday: 'long',
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleString('zh-CN', options);
+        }
 
-    // 设置按钮点击事件
-    const forecastImage = document.getElementById('forecastImage');
+        setInterval(updateTime, 1000);
+        updateTime();
 
-    // 预报时长按钮点击事件
-    document.querySelectorAll('.duration-buttons button').forEach(button => {
-        button.addEventListener('click', function() {
-            const duration = this.getAttribute('data-duration');
-            console.log('选择的预报时长:', duration);
-            loadImage();
+        // 设置按钮点击事件
+        const forecastImage = document.getElementById('forecastImage');
+        const varDisplay = document.getElementById('var-display');
+        const durDisplay = document.getElementById('dur-display');
+        const depDisplay = document.getElementById('dep-display');
+        const depthButtons = document.querySelectorAll('.depth-buttons button');
+        // 初始化深度按钮状态
+        updateDepthButtons();
+        // 预报时长按钮点击事件
+        document.querySelectorAll('.duration-buttons button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.duration-buttons button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                loadImage();
+                updateInfoPanel();
+            });
         });
-    });
 
-    // 变量选择按钮点击事件
-    document.querySelectorAll('.variable-buttons input').forEach(input => {
-        input.addEventListener('change', function() {
-            const variable = this.value;
-            console.log('选择的变量:', variable);
-            loadImage();
+        // 变量选择按钮点击事件
+        document.querySelectorAll('.variable-options input').forEach(input => {
+            input.addEventListener('change', function() {
+                updateDepthButtons();
+                loadImage();
+                updateInfoPanel();
+            });
         });
-    });
 
-    // 深度按钮点击事件
-    document.querySelectorAll('.depth-buttons button').forEach(button => {
-        button.addEventListener('click', function() {
-            const depth = this.getAttribute('data-depth');
-            console.log('选择的深度:', depth);
-            loadImage();
+        // 深度按钮点击事件
+        document.querySelectorAll('.depth-buttons button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.classList.contains('disabled')) {
+                    document.querySelectorAll('.depth-buttons button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    loadImage();
+                    updateInfoPanel();
+                }
+            });
         });
-    });
 
-    // 根据选择加载图片
-    function loadImage() {
-        const duration = document.querySelector('.duration-buttons button:checked')?.getAttribute('data-duration') || '01D';
-        const variable = document.querySelector('.variable-buttons input:checked')?.value || '海流';
-        const depth = document.querySelector('.depth-buttons button:checked')?.getAttribute('data-depth') || '0m';
+        // 更新深度按钮状态
+        function updateDepthButtons() {
+            const selectedVariable = document.querySelector('.variable-options input:checked').value;
+            
+            depthButtons.forEach(button => {
+                if (selectedVariable === 'SSH' && button.getAttribute('data-depth') !== '0m') {
+                    button.classList.add('disabled');
+                    if (button.classList.contains('active')) {
+                        button.classList.remove('active');
+                    }
+                } else {
+                    button.classList.remove('disabled');
+                }
+            });
+            
+            // 如果是SSH，确保0m按钮被选中
+            if (selectedVariable === 'SSH') {
+                const zeroDepthBtn = document.querySelector('.depth-buttons button[data-depth="0m"]');
+                zeroDepthBtn.classList.add('active');
+            }
+        }
+        // 根据选择加载本地图片
+        function loadImage() {
+            forecastImage.style.opacity = '1';
+            
+            setTimeout(() => {
+                const duration = document.querySelector('.duration-buttons button.active')?.getAttribute('data-duration') || '01D';
+                const variable = document.querySelector('.variable-options input:checked')?.value || 'OC';
+                const depth = document.querySelector('.depth-buttons button.active')?.getAttribute('data-depth') || '0m';
+                
+                // 构建本地图片路径
+                const imageUrl = `./dataset/New_Product/Pred_${duration}/${variable}_${depth}.png`;
+                
+                const newImage = new Image();
+                newImage.onload = function() {
+                    forecastImage.src = imageUrl;
+                    forecastImage.style.opacity = '1';
+                };
+                newImage.onerror = function() {
+                    // 图片加载失败时显示默认图片
+                    forecastImage.src = './src/img/background.png';
+                    forecastImage.style.opacity = '1';
+                    console.error('预报结果加载失败, 请稍后重试');
+                };
+                newImage.src = imageUrl;
+                
+            }, 5);
+        }
 
-        // 构建图片路径
-        const imageUrl = `./images/${variable}_${duration}_${depth}.png`; // 这里假设图片存放在 ./images/ 目录
+        // 更新信息面板
+        function updateInfoPanel() {
+            const duration = document.querySelector('.duration-buttons button.active')?.getAttribute('data-duration') || '01D';
+            const variable = document.querySelector('.variable-options input:checked')?.value || 'OC';
+            const depth = document.querySelector('.depth-buttons button.active')?.getAttribute('data-depth') || '0m';
+            
+            // 转换显示文本
+            let varText = '海流';
+            if (variable === 'TEMP') varText = '海洋温度';
+            else if (variable === 'SALT') varText = '海洋盐度';
+            else if (variable === 'SSH') varText = '海表面高度';
+            
+            let durText = duration.replace('D', '天');
+            let depText = depth.replace('m', '米');
+            
+            // 更新显示
+            varDisplay.textContent = varText;
+            durDisplay.textContent = durText;
+            depDisplay.textContent = depText;
+        }
 
-        // 更新图片
-        forecastImage.src = imageUrl;
-    }
-</script>
-
+        // 初始加载
+        document.querySelector('.duration-buttons button[data-duration="01D"]').click();
+    </script>
 </body>
 </html>
