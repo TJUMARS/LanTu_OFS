@@ -189,23 +189,26 @@
         }
 
         .image-container {
-            background-color: #000000;
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 15px;
             position: relative;
             border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(98, 95, 95, 0.509);
             height: 80vh; /* 图片区域高度为页面的80% */
-            width: auto; /* 宽度根据图片自动调整 */
-            margin: 0 20px;
+            width: 100vh; /* 宽度根据图片自动调整 */
+            margin: 0 10px;
+            /* 设置宽高比为4:3 */
+            aspect-ratio: 8/10;
         }
 
         .image-container img {
             max-height: 100%;
+            max-width: 100%;
             border-radius: var(--border-radius);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgb(255, 255, 255);
             transition: opacity 0.5s ease;
         }
 
